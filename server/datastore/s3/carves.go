@@ -57,7 +57,6 @@ func (c *CarveStore) NewCarve(ctx context.Context, metadata *fleet.CarveMetadata
 		Bucket: &c.bucket,
 		Key:    &objectKey,
 	})
-
 	if err != nil {
 		// even if we fail to create the multipart upload, we still want to create
 		// the carve in the database and register an error, this way the user can
@@ -257,7 +256,7 @@ func (c *CarveStore) GetBlock(ctx context.Context, metadata *fleet.CarveMetadata
 		if errors.As(err, &awsErr) && awsErr.Code() == s3.ErrCodeNoSuchKey {
 			// The carve does not exists in S3, mark expired
 			metadata.Expired = true
-			if updateErr := c.UpdateCarve(ctx, metadata); err != nil {
+			if updateErr := c.UpdateCarve(ctx, metadata); updateErr != nil {
 				err = ctxerr.Wrap(ctx, err, updateErr.Error())
 			}
 		}
